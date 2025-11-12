@@ -1,7 +1,21 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from insights_ai import generate_insights
+import os 
+# Teste de importação do módulo insights_ai
+try:
+    from insights_ai import generate_insights
+    st.success("✅ Módulo insights_ai importado com sucesso")
+except Exception as e:
+    st.error(f"❌ Erro ao importar insights_ai: {e}")
+
+# Diagnóstico inicial para ver se o app está carregando corretamente
+st.write("🚀 App iniciado com sucesso!")
+st.write("📁 Conteúdo da pasta atual:", os.listdir())
+if os.path.exists("data"):
+    st.write("📂 Conteúdo da pasta data:", os.listdir("data"))
+else:
+    st.error("❌ Pasta 'data' não encontrada!")
 
 st.set_page_config(page_title="DeliverIQ • Intelligence", page_icon="📦", layout="wide")
 
