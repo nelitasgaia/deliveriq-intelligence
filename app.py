@@ -1,33 +1,43 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import os 
-# Teste de importação do módulo insights_ai
+import os
+
+# ⚙️ Configuração da página (tem que vir primeiro)
+st.set_page_config(page_title="DeliverIQ • Intelligence", page_icon="📦", layout="wide")
+
+# 🧠 Diagnóstico inicial
+st.write("🧠 Iniciando carregamento do app...")
+
+try:
+    st.write("📦 Diretório atual:", os.getcwd())
+    st.write("📁 Conteúdo da pasta raiz:", os.listdir())
+    if os.path.exists("data"):
+        st.write("📂 Conteúdo da pasta data:", os.listdir("data"))
+    else:
+        st.error("❌ Pasta 'data' não encontrada!")
+except Exception as e:
+    st.error(f"❌ Erro ao acessar diretórios: {e}")
+
+# 🔍 Teste de importação do módulo insights_ai
 try:
     from insights_ai import generate_insights
     st.success("✅ Módulo insights_ai importado com sucesso")
 except Exception as e:
     st.error(f"❌ Erro ao importar insights_ai: {e}")
 
-# Diagnóstico inicial para ver se o app está carregando corretamente
-st.write("🚀 App iniciado com sucesso!")
-st.write("📁 Conteúdo da pasta atual:", os.listdir())
-if os.path.exists("data"):
-    st.write("📂 Conteúdo da pasta data:", os.listdir("data"))
-else:
-    st.error("❌ Pasta 'data' não encontrada!")
-
-st.set_page_config(page_title="DeliverIQ • Intelligence", page_icon="📦", layout="wide")
-
+# 🧩 Carregamento dos dados
 @st.cache_data
 def load_data():
     return pd.read_csv("data/deliveries.csv", parse_dates=["data"])
 
 df = load_data()
 
+# 📊 Título e subtítulo
 st.markdown("# 📦 DeliverIQ — Delivery Intelligence Dashboard")
 st.caption("Análise de operações de delivery com insights automáticos (dados simulados).")
 
+# 🔽 Filtros
 col1, col2, col3 = st.columns(3)
 bairros = ["Todos"] + sorted(df["bairro"].unique().tolist())
 entregadores = ["Todos"] + sorted(df["entregador"].unique().tolist())
@@ -41,6 +51,7 @@ with col2:
 with col3:
     f_date = st.date_input("Período", value=(date_min, date_max), min_value=date_min, max_value=date_max)
 
+# 🎯 Filtragem
 mask = (df["data"].dt.date >= f_date[0]) & (df["data"].dt.date <= f_date[1])
 if f_bairro != "Todos":
     mask &= (df["bairro"] == f_bairro)
@@ -49,6 +60,7 @@ if f_entregador != "Todos":
 
 df_f = df.loc[mask].copy()
 
+# 📈 Métricas principais
 colA, colB, colC, colD = st.columns(4)
 total = len(df_f)
 tempo_medio = df_f["tempo_entrega_min"].mean() if total else 0
@@ -62,6 +74,7 @@ colD.metric("Nota média", f"{nota_media:.2f}")
 
 st.divider()
 
+# 📊 Gráficos
 if not df_f.empty:
     c1, c2 = st.columns(2)
     with c1:
@@ -86,8 +99,19 @@ if not df_f.empty:
         st.plotly_chart(fig4, use_container_width=True)
 
 st.divider()
+
+# 💡 Recomendações automáticas
 st.subheader("💡 Recomendações automáticas")
 for ins in generate_insights(df_f):
     st.write(f"- {ins}")
+
+st.caption("Projeto educacional. Dados simulados para demonstração.")
+
+st.divider()
+
+# 💡 Recomendações automáticas
+# st.subheader("💡 Recomendações automáticas")
+# for ins in generate_insights(df_f):
+#     st.write(f"- {ins}")
 
 st.caption("Projeto educacional. Dados simulados para demonstração.")
