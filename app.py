@@ -2,6 +2,22 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import os
+import sys
+
+st.set_page_config(page_title="DeliverIQ • Intelligence", page_icon="📦", layout="wide")
+
+st.write("🧠 Diagnóstico inicial...")
+
+try:
+    st.code(f"""
+📂 Caminho atual: {os.getcwd()}
+📁 Itens na pasta: {os.listdir()}
+🐍 Python: {sys.version}
+🔧 Caminho do script: {__file__}
+    """)
+except Exception as e:
+    st.error(f"❌ Erro ao listar diretórios: {e}")
+
 
 # ⚙️ Configuração da página (tem que vir primeiro)
 st.set_page_config(page_title="DeliverIQ • Intelligence", page_icon="📦", layout="wide")
